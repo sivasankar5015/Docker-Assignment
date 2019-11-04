@@ -1,0 +1,477 @@
+1. Installed docker 
+
+docker -v
+Docker version 18.09.7, build 2d0083d
+
+2.Find a image from dockerhub of your choice(recommeded: nginx)
+
+master $ docker pull nginx
+Using default tag: latest
+latest: Pulling from library/nginx
+8d691f585fa8: Pull complete
+5b07f4e08ad0: Pull complete
+abc291867bca: Pull complete
+Digest: sha256:922c815aa4df050d4df476e92daed4231f466acc8ee90e0e774951b0fd7195a4
+Status: Downloaded newer image for nginx:latest
+
+3. List all the available images in your machine/vm, make sure you see recently pulled image in the list:
+docker images
+
+ubuntu              18.04               775349758637        3 days ago          64.2MB
+ubuntu              latest              775349758637        3 days ago          64.2MB
+nginx               latest              540a289bab6c        12 days ago         126MB
+tomcat              7.0                 e3a393545a10        2 weeks ago         506MB
+tomcat              latest              882487b8be1d        2 weeks ago         507MB
+ubuntu              18.10               9dc19675e327        3 months ago        67.3MB
+
+4. Find out the "Full" ImageId of the image that you pulled and write it below:
+
+docker image -q
+
+e7616c5e50e2
+775349758637
+775349758637
+540a289bab6c
+e3a393545a10
+882487b8be1d
+9dc19675e327
+
+5. Create a container of your image:
+docker run nginx
+
+6. List all the running containers:
+docker container ps 
+
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS                    NAMES
+df8a1934a30e        tomcat              "catalina.sh run"   35 minutes ago      Up 30 minutes       0.0.0.0:8080->8080/tcp   epic_wing
+d7dd5d979ac5        e7616c5e50e2        "/bin/bash"         4 hours ago         Up 3 hours                                   cocky_swartz
+cda8403df78e        ubuntu:18.04        "/bin/bash"         5 hours ago         Up 5 hours                                   competent_curran
+                                    priceless_franklin
+
+7. List all the running and stopped containers:
+docker container ps -a
+
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS                           PORTS                    NAMES
+df8a1934a30e        tomcat              "catalina.sh run"        34 minutes ago      Up 28 minutes                    0.0.0.0:8080->8080/tcp   epic_wing
+0928af9d3c07        tomcat              "catalina.sh run"        About an hour ago   Exited (130) 41 minutes ago                               elated_shaw
+b7c4e685c9da        tomcat              "catalina.sh run"        2 hours ago         Exited (130) 2 hours ago                                  laughing_bhaskara
+f5eb54ed0ab2        e3a393545a10        "catalina.sh run"        2 hours ago         Exited (143) About an hour ago                            inspiring_galileo
+d7dd5d979ac5        e7616c5e50e2        "/bin/bash"              4 hours ago         Up 3 hours                                                cocky_swartz
+cda8403df78e        ubuntu:18.04        "/bin/bash"              5 hours ago         Up 5 hours                                                competent_curran
+4dd6fc874d26        ubuntu:18.10        "/bin/bash"              5 hours ago         Exited (0) 5 hours ago                                    laughing_volhard
+ef86785362be        540a289bab6c        "nginx -g 'daemon of…"   9 hours ago         Exited (0) 9 hours ago                                    priceless_franklin
+
+8. Find out the "Full" containerId of the container and write it below:
+docker inspect cda8403df78e
+
+        "Id": "cda8403df78e6aff6251b9ebf3e2ca31722f107f90d9a33a6146c904e453b952",
+        "Created": "2019-11-04T08:19:47.629469603Z",
+
+9. Find out how many image layers are used to build this image:
+docker image inspect nginx
+
+  "Layers": [
+                "sha256:b67d19e65ef653823ed62a5835399c610a40e8205c16f839c5cc567954fcf594",
+                "sha256:6eaad811af0237b78ba8b44a282d1564259d90007d628a032c5df7e3e2bbb613",
+                "sha256:a89b8f05da3a2cbe459ef3fecfec8076fd0a7568db81f9164147b6f642e2dadf"
+
+10. Get the Apache Tomcat 7 server image from the docker hub:
+
+docker run -d tomcat:7.0
+
+7.0: Pulling from library/tomcat
+9a0b0ce99936: Pull complete
+db3b6004c61a: Pull complete
+f8f075920295: Pull complete
+6ef14aff1139: Pull complete
+962785d3b7f9: Pull complete
+631589572f9b: Pull complete
+c55a0c6f4c7b: Pull complete
+379605d88e88: Pull complete
+831e6e9c3029: Pull complete
+e1417b6fbaf5: Pull complete
+Digest: sha256:9b9b01f50a953d3fe24e78404c66cae3372b446d5b162f42c1c64da7e2ec3f51
+Status: Downloaded newer image for tomcat:7.0
+c98fc5e201f755fbbbb4157bd7f1b3d550efe43bce068bb9cba4de4396ee030d
+
+
+11. Run the Apache Tomcat 7, I mean create a container of Apache Tomcat:
+
+docker run -d tomcat:7.0
+Status: Downloaded newer image for tomcat:7.0
+c98fc5e201f755fbbbb4157bd7f1b3d550efe43bce068bb9cba4de4396ee030d
+
+12. Find out what is the IP Address of the Apache Tomcat Container that it is running on:
+docker inspect --format='{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' c98fc5e201f7
+172.18.0.2
+
+13. Which Port it is using?
+8080/tcp
+
+14. Try to access the Tomcat's home page from your machine/vm.
+http://54.89.45.78:8080/ I am using AWS instance for Docker.
+
+15. What is the disk size of Apache Tomcat image?
+docker images tomcat
+
+REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+tomcat              7.0                 e3a393545a10        2 weeks ago         506MB
+
+
+16. Find out list of all environment variables that is configured for tomcat image, can you see JAVA_HOME and CATALINA_HOME? What did you notice about it?
+
+docker inspect tomcat:7.0
+[
+    {
+        "Id": "sha256:e3a393545a10e8d7ef45f6763b0a7c859632f7498f2b6ef7adcd06cc06bc9567",
+        "RepoTags": [
+            "tomcat:7.0"
+        ],
+        "RepoDigests": [
+            "tomcat@sha256:9b9b01f50a953d3fe24e78404c66cae3372b446d5b162f42c1c64da7e2ec3f51"
+        ],
+        "Parent": "",
+        "Comment": "",
+        "Created": "2019-10-19T02:28:48.882668442Z",
+        "Container": "7ed78fa3359bccf26bd67e311365debbf2935f7cd0f06c2dc0b6b8a34f4458e5",
+        "ContainerConfig": {
+            "Hostname": "7ed78fa3359b",
+            "Domainname": "",
+            "User": "",
+            "AttachStdin": false,
+            "AttachStdout": false,
+            "AttachStderr": false,
+            "ExposedPorts": {
+                "8080/tcp": {}
+            },
+            "Tty": false,
+            "OpenStdin": false,
+            "StdinOnce": false,
+            "Env": [
+                "PATH=/usr/local/tomcat/bin:/usr/local/openjdk-8/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+                "LANG=C.UTF-8",
+                "JAVA_HOME=/usr/local/openjdk-8",
+                "JAVA_VERSION=8u232",
+                "JAVA_BASE_URL=https://github.com/AdoptOpenJDK/openjdk8-upstream-binaries/releases/download/jdk8u232-b09/OpenJDK8U-jdk_",
+                "JAVA_URL_VERSION=8u232b09",
+                "CATALINA_HOME=/usr/local/tomcat",
+                "TOMCAT_NATIVE_LIBDIR=/usr/local/tomcat/native-jni-lib",
+                "LD_LIBRARY_PATH=/usr/local/tomcat/native-jni-lib",
+                "GPG_KEYS=05AB33110949707C93A279E3D3EFE6B686867BA6 07E48665A34DCAFAE522E5E6266191C37C037D42 47309207D818FFD8DCD3F83F1931D684307A10A5 541FBE7D8F78B25E055DDEE13C370389288584E7 61B832AC2F1C5A90F0F9B00A1C506407564C17A3 713DA88BE50911535FE716F5208B0AB1D63011C7 79F7026C690BAA50B92CD8B66A3AD3F4F22C4FED 9BA44C2621385CB966EBA586F72C284D731FABEE A27677289986DB50844682F8ACB77FC2E86E29AC A9C5DF4D22E99998D9875A5110C01C5A2F6059E7 DCFD35E0BF8CA7344752DE8B6FB21E8933C60243 F3A04C595DB5B6A5F1ECA43E3B7BBB100D811BBE F7DA48BB64BCB84ECBA7EE6935CD23C10D498E23",
+                "TOMCAT_MAJOR=7",
+                "TOMCAT_VERSION=7.0.96",
+                "TOMCAT_SHA512=a7ab7627ebafab8c5e5b1b09cff3a6e760f45dbc9b9ab235e14532357e47cf3bb6bbcfbdd92cd94561fe471296fd734d221ba8d59e1216a8369d2c39b1a80c98"
+            ],
+            "Cmd": [
+                "/bin/sh",
+                "-c",
+                "#(nop) ",
+                "CMD [\"catalina.sh\" \"run\"]"
+            ],
+            "ArgsEscaped": true,
+            "Image": "sha256:1948cbc2c3cbec56531efbc5b6347ef81f5a7fb0faf3eea7d5d410f3d621692e",
+            "Volumes": null,
+            "WorkingDir": "/usr/local/tomcat",
+            "Entrypoint": null,
+            "OnBuild": null,
+            "Labels": {}
+        },
+        "DockerVersion": "18.06.1-ce",
+        "Author": "",
+        "Config": {
+            "Hostname": "",
+            "Domainname": "",
+            "User": "",
+            "AttachStdin": false,
+            "AttachStdout": false,
+            "AttachStderr": false,
+            "ExposedPorts": {
+                "8080/tcp": {}
+            },
+            "Tty": false,
+            "OpenStdin": false,
+            "StdinOnce": false,
+            "Env": [
+                "PATH=/usr/local/tomcat/bin:/usr/local/openjdk-8/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+                "LANG=C.UTF-8",
+                "JAVA_HOME=/usr/local/openjdk-8",
+                "JAVA_VERSION=8u232",
+                "JAVA_BASE_URL=https://github.com/AdoptOpenJDK/openjdk8-upstream-binaries/releases/download/jdk8u232-b09/OpenJDK8U-jdk_",
+                "JAVA_URL_VERSION=8u232b09",
+                "CATALINA_HOME=/usr/local/tomcat",
+                "TOMCAT_NATIVE_LIBDIR=/usr/local/tomcat/native-jni-lib",
+                "LD_LIBRARY_PATH=/usr/local/tomcat/native-jni-lib",
+                "GPG_KEYS=05AB33110949707C93A279E3D3EFE6B686867BA6 07E48665A34DCAFAE522E5E6266191C37C037D42 47309207D818FFD8DCD3F83F1931D684307A10A5 541FBE7D8F78B25E055DDEE13C370389288584E7 61B832AC2F1C5A90F0F9B00A1C506407564C17A3 713DA88BE50911535FE716F5208B0AB1D63011C7 79F7026C690BAA50B92CD8B66A3AD3F4F22C4FED 9BA44C2621385CB966EBA586F72C284D731FABEE A27677289986DB50844682F8ACB77FC2E86E29AC A9C5DF4D22E99998D9875A5110C01C5A2F6059E7 DCFD35E0BF8CA7344752DE8B6FB21E8933C60243 F3A04C595DB5B6A5F1ECA43E3B7BBB100D811BBE F7DA48BB64BCB84ECBA7EE6935CD23C10D498E23",
+                "TOMCAT_MAJOR=7",
+                "TOMCAT_VERSION=7.0.96",
+                "TOMCAT_SHA512=a7ab7627ebafab8c5e5b1b09cff3a6e760f45dbc9b9ab235e14532357e47cf3bb6bbcfbdd92cd94561fe471296fd734d221ba8d59e1216a8369d2c39b1a80c98"
+            ],
+            "Cmd": [
+                "catalina.sh",
+                "run"
+            ],
+            "ArgsEscaped": true,
+            "Image": "sha256:1948cbc2c3cbec56531efbc5b6347ef81f5a7fb0faf3eea7d5d410f3d621692e",
+            "Volumes": null,
+            "WorkingDir": "/usr/local/tomcat",
+            "Entrypoint": null,
+            "OnBuild": null,
+            "Labels": null
+        },
+        "Architecture": "amd64",
+        "Os": "linux",
+        "Size": 506428176,
+        "VirtualSize": 506428176,
+        "GraphDriver": {
+            "Data": {
+                "RootDir": "/var/lib/docker/overlay/af2b0b365216236b063fde31ed5c0061f39d0cba6c1d2630760f36773b399251/root"
+            },
+            "Name": "overlay"
+        },
+        "RootFS": {
+            "Type": "layers",
+            "Layers": [
+                "sha256:97041f29baff775daa9b4f608c11db724fbe406c6478f69721a85df4006ef7c0",
+                "sha256:2f77733e9824e18b358f20bd33ad569f21e3136c2a22ef502c15b627be3c9f5e",
+                "sha256:687890749166493fb9958058143592c3aadf73b6f914f1b15093e8108d47dcd8",
+                "sha256:b8f8aeff56a83bdb007111d2a746c5819d592c6c0a0ddbd4d2e60f5ed5d71dea",
+                "sha256:7e3c900343d08f51118c48e0a7ca914c5532681e345078ef4a222ff2898f7a3a",
+                "sha256:99557920a7c54f7f15f397a839132ef74fcf6e60e5659d6f14f4f10dbef2060f",
+                "sha256:a8902d6047fea645ed2d9e425a947c9f6ffa6ffce6c1df9860a243813a7830ed",
+                "sha256:08579474bb30b0a954f88b0b38ab1ba35f23336d263831ec03abec2fa126b0d1",
+                "sha256:786a5c0501cbfc9073b07d2633affd28875310365defaefdbcb2a3e933439e91",
+                "sha256:b3dee6f8faa6f381864f8ca61fd142c3bfd9313a34778c9cdacec60c926591b7"
+            ]
+        },
+        "Metadata": {
+            "LastTagTime": "0001-01-01T00:00:00Z"
+        }
+    }
+]
+
+
+17. Find out which port is exposed for tomcat?
+	"ExposedPorts": {
+                "8080/tcp": {}
+
+18. Run multiple conntainers of tomcat on different port and access it's home page
+http://54.89.45.78:8090 I tried with different port number able to log in 
+
+19. Pull ubuntu os from dockerhub, try to pull 2 images of ubuntu, Except the latest one:
+REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+testimage           version1            e7616c5e50e2        4 hours ago         186MB
+ubuntu              18.04               775349758637        3 days ago          64.2MB
+ubuntu              latest              775349758637        3 days ago          64.2MB
+nginx               latest              540a289bab6c        12 days ago         126MB
+tomcat              7.0                 e3a393545a10        2 weeks ago         506MB
+tomcat              latest              882487b8be1d        2 weeks ago         507MB
+ubuntu              18.10               9dc19675e327        3 months ago        67.3MB
+
+20. Run the container of ubuntu in attached mode:
+cda8403df78e        ubuntu:18.04        "/bin/bash"              6 hours ago         Up 6 hours                    competent_curran
+
+21. Run the container of another ubuntu in detached mode.
+docker run -d ubuntu
+
+4dd6fc874d26        ubuntu:18.10        "/bin/bash"              6 hours ago         Exited (0) 6 hours ago         laughing_volhard
+
+22. Check how many ubuntu containers are running and stopped
+docker ps -a |grep ubuntu
+
+cda8403df78e        ubuntu:18.04        "/bin/bash"              6 hours ago         Up 6 hours                       competent_curran
+4dd6fc874d26        ubuntu:18.10        "/bin/bash"              6 hours ago         Exited (0) 6 hours ago           laughing_volhard
+
+
+23.Is the tomcat container running? If no, start one:
+Already running
+
+24.Check the logs, generated by tomcat container(don't forget to make request to tomcat's home page to see the log
+root@df8a1934a30e:/usr/local/tomcat/logs# tail -100 catalina.2019-11-04.log
+-2019 13:07:24.323 INFO [main] org.apache.catalina.core.AprLifecycleListener.lifecycleEvent APR/OpenSSL configuration: useAprConnector [false], useOpenSSL [true]
+04-Nov-2019 13:07:24.332 INFO [main] org.apache.catalina.core.AprLifecycleListener.initializeSSL OpenSSL successfully initialized [OpenSSL 1.1.0l  10 Sep 2019]
+04-Nov-2019 13:07:24.505 INFO [main] org.apache.coyote.AbstractProtocol.init Initializing ProtocolHandler ["http-nio-8080"]
+04-Nov-2019 13:07:24.530 INFO [main] org.apache.tomcat.util.net.NioSelectorPool.getSharedSelector Using a shared selector for servlet write/read
+04-Nov-2019 13:07:24.565 INFO [main] org.apache.coyote.AbstractProtocol.init Initializing ProtocolHandler ["ajp-nio-8009"]
+04-Nov-2019 13:07:24.568 INFO [main] org.apache.tomcat.util.net.NioSelectorPool.getSharedSelector Using a shared selector for servlet write/read
+04-Nov-2019 13:07:24.568 INFO [main] org.apache.catalina.startup.Catalina.load Initialization processed in 1071 ms
+04-Nov-2019 13:07:24.638 INFO [main] org.apache.catalina.core.StandardService.startInternal Starting service [Catalina]
+04-Nov-2019 13:07:24.639 INFO [main] org.apache.catalina.core.StandardEngine.startInternal Starting Servlet Engine: Apache Tomcat/8.5.47
+04-Nov-2019 13:07:24.666 INFO [localhost-startStop-1] org.apache.catalina.startup.HostConfig.deployDirectory Deploying web application directory [/usr/local/tomcat/webapps/ROOT]
+04-Nov-2019 13:07:25.238 INFO [localhost-startStop-1] org.apache.catalina.startup.HostConfig.deployDirectory Deployment of web application directory [/usr/local/tomcat/webapps/ROOT] has finished in [571] ms
+04-Nov-2019 13:07:25.240 INFO [localhost-startStop-1] org.apache.catalina.startup.HostConfig.deployDirectory Deploying web application directory [/usr/local/tomcat/webapps/docs]
+04-Nov-2019 13:07:25.281 INFO [localhost-startStop-1] org.apache.catalina.startup.HostConfig.deployDirectory Deployment of web application directory [/usr/local/tomcat/webapps/docs] has finished in [41] ms
+04-Nov-2019 13:07:25.281 INFO [localhost-startStop-1] org.apache.catalina.startup.HostConfig.deployDirectory Deploying web application directory [/usr/local/tomcat/webapps/examples]
+04-Nov-2019 13:07:25.812 INFO [localhost-startStop-1] org.apache.catalina.startup.HostConfig.deployDirectory Deployment of web application directory [/usr/local/tomcat/webapps/examples] has finished in [531] ms
+04-Nov-2019 13:07:25.813 INFO [localhost-startStop-1] org.apache.catalina.startup.HostConfig.deployDirectory Deploying web application directory [/usr/local/tomcat/webapps/host-manager]
+04-Nov-2019 13:07:25.869 INFO [localhost-startStop-1] org.apache.catalina.startup.HostConfig.deployDirectory Deployment of web application directory [/usr/local/tomcat/webapps/host-manager] has finished in [56] ms
+04-Nov-2019 13:07:25.870 INFO [localhost-startStop-1] org.apache.catalina.startup.HostConfig.deployDirectory Deploying web application directory [/usr/local/tomcat/webapps/manager]
+04-Nov-2019 13:07:25.916 INFO [localhost-startStop-1] org.apache.catalina.startup.HostConfig.deployDirectory Deployment of web application directory [/usr/local/tomcat/webapps/manager] has finished in [46] ms
+04-Nov-2019 13:07:25.923 INFO [main] org.apache.coyote.AbstractProtocol.start Starting ProtocolHandler ["http-nio-8080"]
+04-Nov-2019 13:07:25.946 INFO [main] org.apache.coyote.AbstractProtocol.start Starting ProtocolHandler ["ajp-nio-8009"]
+04-Nov-2019 13:07:25.949 INFO [main] org.apache.catalina.startup.Catalina.start Server startup in 1379 ms
+
+25. Check if ubuntu conatiner is running? If no, start one in attached mode to the terminal
+Already running in attached mode
+
+26.Login as root user in ubuntu container
+done
+
+27.Create a file with any name in root directory
+bin  boot  dev  etc  home  index.html  lib  lib64  media  mnt  opt  proc  root  run  sbin  srv  sys  tmp  usr  var
+
+28.Install software of your choice in ubuntu container using "apt-get install"
+root@cda8403df78e:/# git --version
+git version 2.17.1
+
+29.Now exit the ubuntu shell, are you back to your host machine, if not, come back to the host machine
+done
+
+30.Check if the ubuntu container is running.
+docker container ps
+
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS                    NAMES
+df8a1934a30e        tomcat              "catalina.sh run"   About an hour ago   Up About an hour    0.0.0.0:8080->8080/tcp   epic_wing
+d7dd5d979ac5        e7616c5e50e2        "/bin/bash"         4 hours ago         Up 4 hours                                   cocky_swartz
+cda8403df78e        ubuntu:18.04        "/bin/bash"         6 hours ago         Up 6 hours                                   competent_curran
+
+31.Create a new ubuntu container out of the same image as that previous container in attached mode
+docker run -it ubuntu
+df8a1934a30e        tomcat              "catalina.sh run"        About an hour ago   Up About an hour                 0.0.0.0:8080->8080/tcp   epic_wing
+0928af9d3c07        tomcat              "catalina.sh run"        2 hours ago         Exited (130) About an hour ago                            elated_shaw
+b7c4e685c9da        tomcat              "catalina.sh run"        3 hours ago         Exited (130) 3 hours ago                                  laughing_bhaskara
+f5eb54ed0ab2        e3a393545a10        "catalina.sh run"        3 hours ago         Exited (143) 2 hours ago                                  inspiring_galileo
+d7dd5d979ac5        e7616c5e50e2        "/bin/bash"              4 hours ago         Up 4 hours                                                cocky_swartz
+cda8403df78e        ubuntu:18.04        "/bin/bash"              6 hours ago         Up 6 hours                                                competent_curran
+4dd6fc874d26        ubuntu:18.10        "/bin/bash"              6 hours ago         Exited (0) 6 hours ago                                    laughing_volhard
+ef86785362be        540a289bab6c        "nginx -g 'daemon of…"   9 hours ago         Exited (0) 9 hours ago                                    priceless_franklin
+
+32.Login as a root user
+done
+
+33.Check if you can see the file created in previous container, you will not see the file as well as software that you installed in the previous container. Now kill this Container.
+bin  boot  dev  etc  home  lib  lib64  media  mnt  opt  proc  root  run  sbin  srv  sys  tmp  usr  var
+
+I have absorbed there is no index.html file which i have created and also git software as well.
+root@26735d14dc11:/# git --version
+bash: git: command not found
+
+34.. Do you have the previous ubuntu container where you created the file and installed the software? If no reapeat step 25 to 29
+Yes I have previous container
+
+35. Create an Image out of the existing container.
+docker commit cda8403df78e -t testimage:version1
+
+REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+testimage           version1            e7616c5e50e2        4 hours ago         186MB
+ubuntu              18.04               775349758637        3 days ago          64.2MB
+ubuntu              latest              775349758637        3 days ago          64.2MB
+nginx               latest              540a289bab6c        12 days ago         126MB
+tomcat              7.0                 e3a393545a10        2 weeks ago         506MB
+tomcat              latest              882487b8be1d        2 weeks ago         507MB
+ubuntu              18.10               9dc19675e327        3 months ago        67.3MB
+
+36. Now Create a Container out of this image and login into it to see if you can see the file and software installed by you in the previous container
+
+ docker run -it testimage:version1
+
+root@32ccf30601c4:/# ls
+bin  boot  dev  etc  home  index.html  lib  lib64  media  mnt  opt  proc  root  run  sbin  srv  sys  tmp  usr  var
+
+root@32ccf30601c4:/# git --version
+git version 2.17.1
+
+
+37.Do you have running tomcat container? If yes, Stop it and kill all tomcat container
+ docker kill df8a1934a30e
+
+[root@ip-172-31-83-27 ec2-user]# docker ps
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
+d7dd5d979ac5        e7616c5e50e2        "/bin/bash"         4 hours ago         Up 4 hours                              cocky_swartz
+cda8403df78e        ubuntu:18.04        "/bin/bash"         6 hours ago         Up 6 hours                              competent_curran
+
+38.Create an index.html file with following code in it:-
+Yes able to see the html page.
+
+39. type below command:-
+	docker images --help
+
+Usage:  docker images [OPTIONS] [REPOSITORY[:TAG]]
+
+List images
+
+Options:
+  -a, --all             Show all images (default hides intermediate images)
+      --digests         Show digests
+  -f, --filter filter   Filter output based on conditions provided
+      --format string   Pretty-print images using a Go template
+      --no-trunc        Don't truncate output
+  -q, --quiet           Only show numeric IDs
+
+docker images -a To show the all images
+ 
+REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+testimage           version1            e7616c5e50e2        4 hours ago         186MB
+ubuntu              18.04               775349758637        3 days ago          64.2MB
+ubuntu              latest              775349758637        3 days ago          64.2MB
+nginx               latest              540a289bab6c        12 days ago         126MB
+tomcat              7.0                 e3a393545a10        2 weeks ago         506MB
+tomcat              latest              882487b8be1d        2 weeks ago         507MB
+ubuntu              18.10               9dc19675e327        3 months ago        67.3MB
+
+  docker images --filter reference="*:latest"
+REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+ubuntu              latest              775349758637        3 days ago          64.2MB
+nginx               latest              540a289bab6c        12 days ago         126MB
+tomcat              latest              882487b8be1d        2 weeks ago         507MB
+
+
+
+ docker images -q  show numeric IDs
+
+e7616c5e50e2
+775349758637
+775349758637
+540a289bab6c
+e3a393545a10
+882487b8be1d
+9dc19675e327
+
+40. type below command:-
+	docker ps --help
+
+docker ps -a
+CONTAINER ID        IMAGE                COMMAND                  CREATED             STATUS                        PORTS               NAMES
+32ccf30601c4        testimage:version1   "/bin/bash"              8 minutes ago       Exited (0) 6 minutes ago                          mystifying_vaughan
+26735d14dc11        ubuntu:18.04         "/bin/bash"              14 minutes ago      Exited (127) 10 minutes ago                       serene_hermann
+df8a1934a30e        tomcat               "catalina.sh run"        2 hours ago         Exited (137) 5 minutes ago                        epic_wing
+0928af9d3c07        tomcat               "catalina.sh run"        2 hours ago         Exited (130) 2 hours ago                          elated_shaw
+b7c4e685c9da        tomcat               "catalina.sh run"        3 hours ago         Exited (130) 3 hours ago                          laughing_bhaskara
+f5eb54ed0ab2        e3a393545a10         "catalina.sh run"        3 hours ago         Exited (143) 2 hours ago                          inspiring_galileo
+d7dd5d979ac5        e7616c5e50e2         "/bin/bash"              4 hours ago         Up 4 hours                                        cocky_swartz
+cda8403df78e        ubuntu:18.04         "/bin/bash"              6 hours ago         Up 6 hours                                        competent_curran
+4dd6fc874d26        ubuntu:18.10         "/bin/bash"              6 hours ago         Exited (0) 6 hours ago                            laughing_volhard
+ef86785362be        540a289bab6c         "nginx -g 'daemon of…"   9 hours ago         Exited (0) 9 hours ago                            priceless_franklin
+
+docker ps -q To show the container ID
+d7dd5d979ac5
+cda8403df78e
+
+ docker ps -l To show the latest created container.
+CONTAINER ID        IMAGE                COMMAND             CREATED             STATUS                     PORTS               NAMES
+32ccf30601c4        testimage:version1   "/bin/bash"         9 minutes ago       Exited (0) 7 minutes ago                       mystifying_vaughan
+
+ docker ps -s  To display total file sizes
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES               SIZE
+d7dd5d979ac5        e7616c5e50e2        "/bin/bash"         4 hours ago         Up 4 hours                              cocky_swartz        435B (virtual 186MB)
+cda8403df78e        ubuntu:18.04        "/bin/bash"         6 hours ago         Up 6 hours                              competent_curran    121MB (virtual 186MB)
+
+docker ps -n=-1 To show n last created containers
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
+d7dd5d979ac5        e7616c5e50e2        "/bin/bash"         5 hours ago         Up 4 hours                              cocky_swartz
+cda8403df78e        ubuntu:18.04        "/bin/bash"         6 hours ago         Up 6 hours                              competent_curran
+
+
+
+
+
+
